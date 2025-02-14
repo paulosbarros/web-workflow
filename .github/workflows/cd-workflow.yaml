@@ -1,0 +1,23 @@
+jobs:
+  pre-deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Validações
+        uses: ./.github/workflows/validate.yaml
+
+  deploy:
+    runs-on: self-hosted
+    needs: security
+    steps:
+      - name: Publicar imagem Docker
+        uses: paulosbarros/argocd-workflow/.github/workflows/deploy.yaml@v1
+
+  post-deploy:
+    runs-on: self-hosted
+    needs: security
+    steps:
+      - name: Publicar imagem Docker
+        uses: paulosbarros/post-deploy-workflow/.github/workflows/post-deploy-workflow.yaml@v1

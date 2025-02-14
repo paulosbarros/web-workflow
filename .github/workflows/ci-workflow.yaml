@@ -1,0 +1,29 @@
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+      - name: Executar build
+        uses: ./.github/workflows/build.yaml
+
+  quality:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Executar análise de qualidade
+        uses: paulosbarros/quality-workflow/.github/workflows/sonar-workflow.yaml@v1
+
+  security:
+    runs-on: self-hosted
+    needs: quality
+    steps:
+      - name: Executar análise de segurança
+        uses: paulosbarros/security-workflow/.github/workflows/security-workflow.yaml@v1
+
+  push:
+    runs-on: self-hosted
+    needs: security
+    steps:
+      - name: Publicar imagem Docker
+        uses: paulosbarros/docker-workflow/.github/workflows/push-docker.yaml@v1
